@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branches Micro Resort</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(45deg, #ffeb3b, #ff69b4, #87ceeb, #98fb98);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            overflow-x: hidden;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+        }
+        header {
+            background: rgba(255, 105, 180, 0.9); padding: 40px; text-align: center; color: white; position: relative; overflow: hidden;
+        }
+        header h1 {
+            font-size: 3em; text-shadow: 3px 3px #ff4500; animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-20px); } 60% { transform: translateY(-10px); }
+        }
+        nav {
+            background: #ff4500; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 10;
+        }
+        nav a {
+            color: white; text-decoration: none; margin: 0 20px; font-size: 1.2em; transition: transform 0.3s;
+        }
+        nav a:hover { transform: scale(1.2); }
+        .container {
+            max-width: 1200px; margin: 20px auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.8); border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.3s;
+        }
+        .section:hover { transform: translateY(-10px); }
+        .booking-form { display: flex; flex-direction: column; gap: 10px; }
+        .booking-form input, .booking-form select {
+            padding: 12px; border: 3px solid #ff69b4; border-radius: 10px; font-size: 1em; transition: border-color 0.3s;
+        }
+        .booking-form input:focus, .booking-form select:focus { border-color: #ff4500; outline: none; }
+        .booking-form button {
+            background: #ff4500; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 1.2em; cursor: pointer; transition: background 0.3s, transform 0.2s;
+        }
+        .booking-form button:hover { background: #ff69b4; transform: scale(1.05); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .community-board {
+            background: #98fb98; padding: 15px; border-radius: 10px; max-height: 250px; overflow-y: auto; margin-bottom: 10px;
+        }
+        .community-board p {
+            background: rgba(255, 255, 255, 0.7); padding: 10px; margin: 5px 0; border-radius: 5px; animation: slideIn 0.5s;
+        }
+        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .community-input { display: flex; gap: 10px; }
+        .community-input input { flex: 1; padding: 10px; border: 2px solid #ff4500; border-radius: 5px; }
+        .community-input button { background: #ff69b4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        footer { background: #ff69b4; color: white; text-align: center; padding: 20px; margin-top: 20px; }
+
+        /* Gallery Styles */
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 20px;
+        }
+        .gallery-item {
+            position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); transition: transform 0.3s; cursor: pointer;
+        }
+        .gallery-item:hover { transform: scale(1.05); }
+        .gallery-item img, .gallery-item video {
+            width: 100%; height: 200px; object-fit: cover; display: block;
+        }
+        .gallery-item video { background: #000; } /* Ensures visibility during load */
+        .gallery-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 10px; transform: translateY(100%); transition: transform 0.3s;
+        }
+        .gallery-item:hover .gallery-overlay { transform: translateY(0); }
+        .gallery-overlay button {
+            background: #ff4500; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 5px;
+        }
+        .gallery-overlay button:hover { background: #ff69b4; }
+        .comments {
+            background: #87ceeb; padding: 10px; border-radius: 5px; max-height: 150px; overflow-y: auto; margin-top: 10px;
+        }
+        .comment-input { display: flex; gap: 10px; margin-top: 10px; }
+        .comment-input input { flex: 1; padding: 8px; border: 2px solid #ff4500; border-radius: 5px; }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
+        }
+        .lightbox img {
+            max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 20px; color: white; font-size: 2em; cursor: pointer; text-shadow: 0 0 5px #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Branches Micro Resort</h1>
+        <p>Where Adventure Meets Rainbows!</p>
+    </header>
+
+    <nav>
+        <a href="#booking">Book Now</a>
+        <a href="events.html">Events</a> <!-- Changed from #events to events.html -->
+        <a href="gallery.html">Gallery</a> <!-- Changed from #gallery to gallery.html -->
+        <a href="#community">Community</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="container">
+        <div class="section" id="booking">
+            <h2>Book Your Colorful Stay!</h2>
+            <form class="booking-form" onsubmit="bookStay(event)">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <select required>
+                    <option value="">Pick Your Spot!</option>
+                    <option value="cabin">Magical Dome ($129/night)</option>
+                    <option value="treehouse">Cozy Cabin ($199/night)</option>
+                    <option value="yurt">The Bunkhouse ($299/night)</option>
+                </select>
+                <input type="date" required>
+                <input type="number" placeholder="Nights" min="1" required>
+                <button type="submit">Let’s Go!</button>
+            </form>
+        </div>
+
+        <div class="section" id="events">
+            <h2>Fun Events Ahead!</h2>
+            <div id="calendar"></div>
+            <div id="event-details" style="margin-top: 15px; color: #ff4500;"></div>
+        </div>
+
+        <div class="section" id="gallery">
+            <h2>Rainbow Memories Gallery</h2>
+            <div class="gallery-grid" id="galleryGrid"></div>
+        </div>
+
+        <div class="section" id="community">
+            <h2>Vibe with Friends!</h2>
+            <div class="community-board" id="communityBoard">
+                <p><strong>Sarah:</strong> Best weekend ever!</p>
+                <p><strong>Mike:</strong> Who’s up for a bonfire?</p>
+            </div>
+            <div class="community-input">
+                <input type="text" id="communityPost" placeholder="Say something fun!">
+                <button onclick="postMessage()">Post</button>
+            </div>
+        </div>
+    </div>
+
+    <footer id="contact">
+        <p>📧 info@BranchesResort.com | 📞 (555) 123-4567</p>
+        <p>Join the Fun on Social Media!</p>
+    </footer>
+
+    <!-- Lightbox for enlarged images -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">×</span>
+        <img id="lightbox-img" src="">
+    </div>
+
+    <script>
+        const events = {
+            "2025-03-15": { name: "Tie-Dye Party", time: "3PM", desc: "Get messy with colors!" },
+            "2025-03-22": { name: "Sunset Yoga", time: "6PM", desc: "Relax with a rainbow view." },
+            "2025-03-29": { name: "Color Run 5K", time: "9AM", desc: "Run through a blast of color!" }
+        };
+
+        const galleryItems = [
+            { type: 'image', src: 'https://via.placeholder.com/300x200.png?text=Cabin+Fun', likes: 5, comments: ['Love this spot!', 'So cozy!'] },
+            { type: 'video', src: 'https://www.w3schools.com/html/mov_bbb.mp4', likes: 3, comments: ['Epic sunset!'] },
+            { type: 'image', src: 'C:\Users\codya\Website-Building\images\IMG3860.jpg', likes: 8, comments: ['Wow, amazing view!'] }
+        ];
+
+        function generateCalendar() {
+            const today = new Date("2025-02-28");
+            const month = today.getMonth() + 1;
+            const year = today.getFullYear();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = `
+                <div style="text-align: center; margin-bottom: 10px;"><h3 style="color: #ff69b4;">March 2025</h3></div>
+                <div class="calendar-grid">
+                    <div style="background: #ffeb3b; padding: 10px;">Sun</div><div style="background: #ffeb3b; padding: 10px;">Mon</div>
+                    <div style="background: #ffeb3b; padding: 10px;">Tue</div><div style="background: #ffeb3b; padding: 10px;">Wed</div>
+                    <div style="background: #ffeb3b; padding: 10px;">Thu</div><div style="background: #ffeb3b; padding: 10px;">Fri</div>
+                    <div style="background: #ffeb3b; padding: 10px;">Sat</div>
+                </div>
+            `;
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div style="padding: 15px;"></div>';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `2025-03-${day.toString().padStart(2, '0')}`;
+                const hasEvent = events[dateStr];
+                grid.innerHTML += `
+                    <div style="padding: 15px; background: ${hasEvent ? '#87ceeb' : '#fff'}; border-radius: 10px; cursor: ${hasEvent ? 'pointer' : 'default'}; transition: all 0.3s; ${hasEvent ? 'box-shadow: 0 0 10px rgba(0,0,0,0.2);' : ''}"
+                    onmouseover="this.style.background='${hasEvent ? '#ffeb3b' : '#fff'}'" onmouseout="this.style.background='${hasEvent ? '#87ceeb' : '#fff'}'" onclick="showEventDetails('${dateStr}')">
+                        ${day}${hasEvent ? '<span style="display: block; font-size: 0.8em; color: #ff4500;">🎉</span>' : ''}
+                    </div>
+                `;
+            }
+            calendar.appendChild(grid);
+        }
+
+        function showEventDetails(date) {
+            const event = events[date];
+            document.getElementById('event-details').innerHTML = event ? `
+                <strong>${event.name}</strong> - ${event.time}<br>${event.desc}<br>
+                <button onclick="alert('RSVP sent! Check your email!')" style="margin-top: 10px; background: #ff69b4; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">RSVP</button>
+            ` : "No events on this day. Want to suggest one? Email us!";
+        }
+
+        function generateGallery() {
+            const gallery = document.getElementById('galleryGrid');
+            galleryItems.forEach((item, index) => {
+                const media = item.type === 'image' 
+                    ? `<img src="${item.src}" alt="Gallery Image" onclick="openLightbox('${item.src}')">`
+                    : `<video src="${item.src}" preload="auto" loop muted playsinline onmouseover="this.play()" onmouseout="this.pause()"></video>`;
+                gallery.innerHTML += `
+                    <div class="gallery-item" id="gallery-${index}">
+                        ${media}
+                        <div class="gallery-overlay">
+                            <button onclick="likeItem(${index})">❤️ Like (${item.likes})</button>
+                            <div class="comments" id="comments-${index}">
+                                ${item.comments.map(c => `<p>${c}</p>`).join('')}
+                            </div>
+                            <div class="comment-input">
+                                <input type="text" placeholder="Add a comment" id="comment-input-${index}">
+                                <button onclick="addComment(${index})">Post</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function likeItem(index) {
+            galleryItems[index].likes++;
+            document.querySelector(`gallery.html-${index} .gallery-overlay button`).textContent = `❤️ Like (${galleryItems[index].likes})`;
+        }
+
+        function addComment(index) {
+            const input = document.getElementById(`comment-input-${index}`);
+            const comment = input.value.trim();
+            if (comment) {
+                galleryItems[index].comments.push(comment);
+                document.getElementById(`comments-${index}`).innerHTML += `<p>${comment}</p>`;
+                input.value = '';
+            }
+        }
+
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function bookStay(event) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form[0].value;
+            alert(`Woohoo, ${name}! Your stay is booked! Check your email for a rainbow confirmation!`);
+            form.reset();
+        }
+
+        function postMessage() {
+            const postInput = document.getElementById('communityPost');
+            const post = postInput.value.trim();
+            if (post) {
+                const board = document.getElementById('communityBoard');
+                board.innerHTML += `<p><strong>You:</strong> ${post}</p>`;
+                board.scrollTop = board.scrollHeight;
+                postInput.value = '';
+                setTimeout(() => {
+                    board.innerHTML += `<p><strong>Resort Bot:</strong> Love that vibe! 🌈</p>`;
+                    board.scrollTop = board.scrollHeight;
+                }, 2000);
+            }
+        }
+
+        setInterval(() => {
+            const emoji = document.createElement('span');
+            emoji.textContent = ['🌈', '✨', '🌴', '🏖️', '🎉'][Math.floor(Math.random() * 5)];
+            emoji.style.position = 'absolute';
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.top = '-50px';
+            emoji.style.fontSize = '2em';
+            document.body.appendChild(emoji);
+            setTimeout(() => {
+                emoji.style.transition = 'all 5s linear';
+                emoji.style.top = '100vh';
+                setTimeout(() => emoji.remove(), 5000);
+            }, 100);
+        }, 2000);
+
+        window.onload = () => {
+            generateCalendar();
+            generateGallery();
+        };
+    </script>
+</body>
+</html>
