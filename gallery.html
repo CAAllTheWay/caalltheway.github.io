@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branches Resort - Gallery</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(45deg, #ffeb3b, #ff69b4, #87ceeb, #98fb98);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            overflow-x: hidden;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+        }
+        header {
+            background: rgba(255, 105, 180, 0.9); padding: 40px; text-align: center; color: white; position: relative; overflow: hidden;
+        }
+        header h1 {
+            font-size: 3em; text-shadow: 3px 3px #ff4500; animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-20px); } 60% { transform: translateY(-10px); }
+        }
+        nav {
+            background: #ff4500; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 10;
+        }
+        nav a {
+            color: white; text-decoration: none; margin: 0 20px; font-size: 1.2em; transition: transform 0.3s;
+        }
+        nav a:hover { transform: scale(1.2); }
+        .container {
+            max-width: 1200px; margin: 20px auto; padding: 20px;
+        }
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; padding: 20px;
+        }
+        .gallery-item {
+            position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer;
+        }
+        .gallery-item:hover {
+            transform: rotate(3deg) scale(1.05); box-shadow: 0 0 20px #ff69b4;
+        }
+        .gallery-item img, .gallery-item video {
+            width: 100%; height: 200px; object-fit: cover; display: block;
+        }
+        .gallery-item video { background: #000; }
+        .gallery-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 10px; transform: translateY(100%); transition: transform 0.3s;
+        }
+        .gallery-item:hover .gallery-overlay { transform: translateY(0); }
+        .gallery-overlay button {
+            background: #ff4500; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin: 5px; transition: transform 0.2s;
+        }
+        .gallery-overlay button:hover { background: #ff69b4; transform: scale(1.1); }
+        .comments {
+            background: #87ceeb; padding: 10px; border-radius: 5px; max-height: 150px; overflow-y: auto; margin-top: 10px;
+        }
+        .comment-input { display: flex; gap: 10px; margin-top: 10px; }
+        .comment-input input { flex: 1; padding: 8px; border: 2px solid #ff4500; border-radius: 5px; }
+        .upload-section {
+            background: rgba(255, 255, 255, 0.8); border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center; position: relative;
+        }
+        .upload-section input { margin: 10px; }
+        .upload-section button { background: #ff4500; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: transform 0.2s; }
+        .upload-section button:hover { background: #ff69b4; transform: scale(1.1); }
+        .lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
+        }
+        .lightbox img {
+            max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.5); animation: zoomIn 0.3s;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; }
+        }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 20px; color: white; font-size: 2em; cursor: pointer; text-shadow: 0 0 5px #ff4500;
+        }
+        .confetti {
+            position: absolute; width: 10px; height: 10px; border-radius: 50%; animation: fall 2s linear;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Branches Resort</h1>
+        <p>Share Your Rainbow Moments!</p>
+    </header>
+
+    <nav>
+        <a href="./index.html#booking">Book Now</a>
+        <a href="./index.html#events">Events</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./index.html#community">Community</a>
+        <a href="./index.html#contact">Contact</a>
+    </nav>
+
+    <div class="container">
+        <div class="upload-section" id="uploadSection">
+            <h2>Upload Your Photos & Videos</h2>
+            <input type="file" id="mediaUpload" accept="image/*,video/*" multiple>
+            <button onclick="uploadMedia()">Upload</button>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">×</span>
+        <img id="lightbox-img" src="">
+    </div>
+
+    <script>
+        let galleryItems = [
+            { type: 'image', src: 'https://via.placeholder.com/300x200.png?text=Cabin+Fun', likes: 5, comments: ['Love this spot!', 'So cozy!'] },
+            { type: 'video', src: 'https://www.w3schools.com/html/mov_bbb.mp4', likes: 3, comments: ['Epic sunset!'] },
+            { type: 'image', src: 'https://via.placeholder.com/300x200.png?text=Treehouse', likes: 8, comments: ['Wow, amazing view!'] }
+        ];
+
+        function generateGallery() {
+            const gallery = document.getElementById('galleryGrid');
+            gallery.innerHTML = '';
+            galleryItems.forEach((item, index) => {
+                const media = item.type === 'image' 
+                    ? `<img src="${item.src}" alt="Gallery Image" onclick="openLightbox('${item.src}')">`
+                    : `<video src="${item.src}" preload="auto" loop muted playsinline onmouseover="this.play()" onmouseout="this.pause()"></video>`;
+                gallery.innerHTML += `
+                    <div class="gallery-item" id="gallery-${index}" style="animation: bounceItem ${2 + Math.random()}s infinite;">
+                        ${media}
+                        <div class="gallery-overlay">
+                            <button onclick="likeItem(${index}); event.stopPropagation();">❤️ Like (${item.likes})</button>
+                            <div class="comments" id="comments-${index}">
+                                ${item.comments.map(c => `<p>${c}</p>`).join('')}
+                            </div>
+                            <div class="comment-input">
+                                <input type="text" placeholder="Add a comment" id="comment-input-${index}">
+                                <button onclick="addComment(${index}); event.stopPropagation();">Post</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        @keyframes bounceItem {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        function likeItem(index) {
+            galleryItems[index].likes++;
+            document.querySelector(`#gallery-${index} .gallery-overlay button`).textContent = `❤️ Like (${galleryItems[index].likes})`;
+            triggerConfetti();
+        }
+
+        function addComment(index) {
+            const input = document.getElementById(`comment-input-${index}`);
+            const comment = input.value.trim();
+            if (comment) {
+                galleryItems[index].comments.push(comment);
+                document.getElementById(`comments-${index}`).innerHTML += `<p>${comment}</p>`;
+                input.value = '';
+            }
+        }
+
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        function uploadMedia() {
+            const input = document.getElementById('mediaUpload');
+            const files = input.files;
+            if (files.length > 0) {
+                for (let file of files) {
+                    const type = file.type.startsWith('image') ? 'image' : 'video';
+                    const src = URL.createObjectURL(file);
+                    galleryItems.unshift({ type, src, likes: 0, comments: [] });
+                }
+                generateGallery();
+                input.value = '';
+                triggerConfetti();
+                const uploadSection = document.getElementById('uploadSection');
+                uploadSection.style.animation = 'shake 0.5s';
+                setTimeout(() => uploadSection.style.animation = '', 500);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        function triggerConfetti() {
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.background = ['#ffeb3b', '#ff69b4', '#87ceeb', '#98fb98'][Math.floor(Math.random() * 4)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        setInterval(() => {
+            const emoji = document.createElement('span');
+            emoji.textContent = ['🌈', '✨', '🌴', '🏖️', '🎉'][Math.floor(Math.random() * 5)];
+            emoji.style.position = 'absolute';
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.top = '-50px';
+            emoji.style.fontSize = '2em';
+            document.body.appendChild(emoji);
+            setTimeout(() => {
+                emoji.style.transition = 'all 5s linear';
+                emoji.style.top = '100vh';
+                setTimeout(() => emoji.remove(), 5000);
+            }, 100);
+        }, 2000);
+
+        window.onload = generateGallery;
+    </script>
+</body>
+</html>

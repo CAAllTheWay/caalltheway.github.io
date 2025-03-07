@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branches Resort - Events</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(45deg, #ffeb3b, #ff69b4, #87ceeb, #98fb98);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            overflow-x: hidden;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+        }
+        header {
+            background: rgba(255, 105, 180, 0.9); padding: 40px; text-align: center; color: white; position: relative; overflow: hidden;
+        }
+        header h1 {
+            font-size: 3em; text-shadow: 3px 3px #ff4500; animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-20px); } 60% { transform: translateY(-10px); }
+        }
+        nav {
+            background: #ff4500; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 10;
+        }
+        nav a {
+            color: white; text-decoration: none; margin: 0 20px; font-size: 1.2em; transition: transform 0.3s;
+        }
+        nav a:hover { transform: scale(1.2); }
+        .container {
+            max-width: 1200px; margin: 20px auto; padding: 20px; text-align: center;
+        }
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; margin-top: 20px;
+        }
+        .calendar-day {
+            padding: 15px; background: #fff; border-radius: 10px; transition: all 0.3s; cursor: default;
+        }
+        .calendar-day.event {
+            background: #87ceeb; cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .calendar-day.event:hover {
+            background: #ffeb3b; transform: scale(1.1) rotate(2deg);
+        }
+        #event-details {
+            margin-top: 20px; color: #ff4500; background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 10px; animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+        #event-details button {
+            background: #ff69b4; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: transform 0.2s;
+        }
+        #event-details button:hover { transform: scale(1.1); }
+        .confetti {
+            position: absolute; width: 10px; height: 10px; border-radius: 50%; animation: fall 2s linear;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Branches Resort</h1>
+        <p>Join the Fun at Our Events!</p>
+    </header>
+
+    <nav>
+        <a href="./index.html#booking">Book Now</a>
+        <a href="./events.html">Events</a>
+        <a href="./gallery.html">Gallery</a>
+        <a href="./index.html#community">Community</a>
+        <a href="./index.html#contact">Contact</a>
+    </nav>
+
+    <div class="container">
+        <h2>Upcoming Events</h2>
+        <div id="calendar"></div>
+        <div id="event-details"></div>
+    </div>
+
+    <script>
+        const events = {
+            "2025-03-15": { name: "Tie-Dye Party", time: "3PM", desc: "Get messy with colors!" },
+            "2025-03-22": { name: "Sunset Yoga", time: "6PM", desc: "Relax with a rainbow view." },
+            "2025-03-29": { name: "Color Run 5K", time: "9AM", desc: "Run through a blast of color!" }
+        };
+
+        function generateCalendar() {
+            const today = new Date("2025-02-28");
+            const month = today.getMonth() + 1;
+            const year = today.getFullYear();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = `
+                <div style="text-align: center; margin-bottom: 10px;"><h3 style="color: #ff69b4;">March 2025</h3></div>
+                <div class="calendar-grid">
+                    <div style="background: #ffeb3b; padding: 10px;">Sun</div><div style="background: #ffeb3b; padding: 10px;">Mon</div>
+                    <div style="background: #ffeb3b; padding: 10px;">Tue</div><div style="background: #ffeb3b; padding: 10px;">Wed</div>
+                    <div style="background: #ffeb3b; padding: 10px;">Thu</div><div style="background: #ffeb3b; padding: 10px;">Fri</div>
+                    <div style="background: #ffeb3b; padding: 10px;">Sat</div>
+                </div>
+            `;
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div class="calendar-day"></div>';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `2025-03-${day.toString().padStart(2, '0')}`;
+                const hasEvent = events[dateStr];
+                grid.innerHTML += `
+                    <div class="calendar-day ${hasEvent ? 'event' : ''}" style="animation: bounceItem ${2 + Math.random()}s infinite;"
+                    onclick="showEventDetails('${dateStr}')">
+                        ${day}${hasEvent ? '<span style="display: block; font-size: 0.8em; color: #ff4500;">🎉</span>' : ''}
+                    </div>
+                `;
+            }
+            calendar.appendChild(grid);
+        }
+
+        @keyframes bounceItem {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        function showEventDetails(date) {
+            const event = events[date];
+            const details = document.getElementById('event-details');
+            details.innerHTML = event ? `
+                <strong>${event.name}</strong> - ${event.time}<br>${event.desc}<br>
+                <button onclick="rsvp('${event.name}'); event.stopPropagation();">RSVP</button>
+            ` : "No events on this day. Want to suggest one? Email us!";
+            if (event) triggerConfetti();
+        }
+
+        function rsvp(eventName) {
+            alert(`You’ve RSVP’d for ${eventName}! Check your email!`);
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.background = ['#ffeb3b', '#ff69b4', '#87ceeb', '#98fb98'][Math.floor(Math.random() * 4)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        setInterval(() => {
+            const emoji = document.createElement('span');
+            emoji.textContent = ['🌈', '✨', '🌴', '🏖️', '🎉'][Math.floor(Math.random() * 5)];
+            emoji.style.position = 'absolute';
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.top = '-50px';
+            emoji.style.fontSize = '2em';
+            document.body.appendChild(emoji);
+            setTimeout(() => {
+                emoji.style.transition = 'all 5s linear';
+                emoji.style.top = '100vh';
+                setTimeout(() => emoji.remove(), 5000);
+            }, 100);
+        }, 2000);
+
+        window.onload = generateCalendar;
+    </script>
+</body>
+</html>
