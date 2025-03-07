@@ -116,12 +116,13 @@
 
     <div class="container">
         <div class="section" id="booking">
-            <h2>Book Your Colorful Stay!</h2>
+            <h2>Book Your Stay!</h2>
             <form class="booking-form" onsubmit="bookStay(event)">
                 <input type="text" placeholder="Your Name" required>
                 <input type="email" placeholder="Your Email" required>
                 <select required>
                     <option value="">Pick Your Spot!</option>
+                    <option value="tent">Tent Site ($29/night)</option>
                     <option value="cabin">Hexa Dome ($129/night)</option>
                     <option value="treehouse">Cozy Cabin ($199/night)</option>
                     <option value="yurt">The Bunkhouse ($299/night)</option>
@@ -172,7 +173,7 @@
         const events = {
             "2025-03-15": { name: "Food Truck Meet", time: "5PM", desc: "The Thai Bowl truck is bringing the spice!" },
             "2025-03-22": { name: "Sunset Yoga", time: "6PM", desc: "Relax and get stretchy." },
-            "2025-03-29": { name: "Guided Hike", time: "9AM", desc: "Hike the hills!" }
+            "2025-03-29": { name: "Guided Hike", time: "6AM", desc: "Hike the hills!" }
         };
 
         const galleryItems = [
